@@ -1,0 +1,7 @@
+venv/
+.virtualenv/
+.idea/
+/log.txt
+__pycache__/
+/NoChannelBot/db/no_channel.db
+.env

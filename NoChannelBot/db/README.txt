@@ -1,0 +1,1 @@
+In this directory will be generated no_channel.db

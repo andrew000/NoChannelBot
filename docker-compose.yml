@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  bot:
+    container_name: nochannelbot
+
+    build:
+      context: ./NoChannelBot
+      dockerfile: Dockerfile
+
+    stop_signal: SIGINT
+
+    volumes:
+      - ./NoChannelBot:/app
+
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+
+    restart: "on-failure"
+
+    entrypoint: [ "python3", "-u",  "main.py" ]
