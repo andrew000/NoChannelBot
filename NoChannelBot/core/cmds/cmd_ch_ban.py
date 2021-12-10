@@ -13,8 +13,11 @@ async def cmd_enable_ch_ban(msg: Message):
     async with aiosqlite.connect(DB_URL) as db:
         db.row_factory = dict_factory
         async with db.execute("SELECT settings FROM groups WHERE id = ?", (msg.chat.id,)) as cursor:
-            query = (await cursor.fetchone()).get('settings')
-            query = json.loads(query)
+            query = await cursor.fetchone()
+            if not query:
+                return
+
+            query = json.loads(query.get('settings'))
             group_settings: GroupSettings = GroupSettings.parse_obj(query)
 
         group_settings.ban_channels = True
@@ -29,8 +32,11 @@ async def cmd_disable_ch_ban(msg: Message):
     async with aiosqlite.connect(DB_URL) as db:
         db.row_factory = dict_factory
         async with db.execute("SELECT settings FROM groups WHERE id = ?", (msg.chat.id,)) as cursor:
-            query = (await cursor.fetchone()).get('settings')
-            query = json.loads(query)
+            query = await cursor.fetchone()
+            if not query:
+                return
+
+            query = json.loads(query.get('settings'))
             group_settings: GroupSettings = GroupSettings.parse_obj(query)
 
         group_settings.ban_channels = False
