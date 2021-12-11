@@ -29,7 +29,7 @@ async def messages(msg: Message):
     if group_settings.ban_channels is True:
         if (await msg.chat.get_member(msg.bot.id)).is_chat_admin():
             try:
-                await msg.chat.ban_sender_chat(sender_chat_id=msg.sender_chat.id, until_date=group_settings.until_date)
+                await msg.chat.ban_sender_chat(sender_chat_id=msg.sender_chat.id)
                 await msg.reply("❗️ Слать сообщения от имени каналов в этой группе - ЗАПРЕЩЕНО")
 
             except Exception as exc:
