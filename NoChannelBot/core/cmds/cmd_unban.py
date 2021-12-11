@@ -1,6 +1,6 @@
 from aiogram.types import Message
 
-from config import dp
+from config import dp, CHANNEL_BOT_ID
 
 
 @dp.throttled(rate=2)
@@ -13,7 +13,7 @@ async def cmd_unban(msg: Message):
         await msg.reply("Необходимо ответить на сообщения канала, а не пользователя")
         return
 
-    elif msg.reply_to_message.from_user.id != 777000:
+    elif msg.reply_to_message.from_user.id != CHANNEL_BOT_ID:
         await msg.reply("Необходимо ответить на сообщения канала, а не анонимного админа")
         return
 

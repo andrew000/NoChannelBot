@@ -3,7 +3,7 @@ import json
 import aiosqlite
 from aiogram.types import Message
 
-from config import DB_URL, dp
+from config import DB_URL, dp, CHANNEL_BOT_ID
 from core.db.utils import dict_factory
 from core.models.group import GroupSettings
 
@@ -13,7 +13,7 @@ async def messages(msg: Message):
     if not msg.sender_chat:
         return
 
-    if msg.from_user.id != 777000:
+    if msg.from_user.id != CHANNEL_BOT_ID:
         return
 
     async with aiosqlite.connect(DB_URL) as db:
