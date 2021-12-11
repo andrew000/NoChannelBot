@@ -1,3 +1,5 @@
+from sqlite3 import IntegrityError
+
 import aiosqlite
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.types import ChatType, Message
@@ -32,11 +34,18 @@ class CheckGroupMiddleware(BaseMiddleware):
                 new_group = GroupModel(id=msg.chat.id,
                                        member_count=await msg.chat.get_member_count(),
                                        link=await msg.chat.get_url())
-                await db.execute("INSERT INTO groups(id, member_count, link, settings) VALUES (?, ?, ?, ?)",
-                                 (new_group.id,
-                                  new_group.member_count,
-                                  new_group.link,
-                                  new_group.settings.json()))
+                try:
+                    await db.execute("INSERT INTO groups(id, member_count, link, settings) VALUES (?, ?, ?, ?)",
+                                     (new_group.id,
+                                      new_group.member_count,
+                                      new_group.link,
+                                      new_group.settings.json()))
+
+                except IntegrityError:
+                    await db.execute("UPDATE groups SET member_count = ?, link = ? WHERE id = ?",
+                                     (await msg.chat.get_member_count(),
+                                      await msg.chat.get_url(),
+                                      msg.chat.id))
 
             else:
                 await db.execute("UPDATE groups SET member_count = ?, link = ? WHERE id = ?",
@@ -73,14 +82,22 @@ class CheckUserMiddleware(BaseMiddleware):
                                      username=msg.from_user.username,
                                      language_code=msg.from_user.language_code)
 
-                await db.execute("INSERT INTO users(id, first_name, last_name, username, language_code) "
-                                 "VALUES (?, ?, ?, ?, ?)",
-                                 (new_user.id,
-                                  new_user.first_name,
-                                  new_user.last_name,
-                                  new_user.username,
-                                  new_user.language_code))
-
+                try:
+                    await db.execute("INSERT INTO users(id, first_name, last_name, username, language_code) "
+                                     "VALUES (?, ?, ?, ?, ?)",
+                                     (new_user.id,
+                                      new_user.first_name,
+                                      new_user.last_name,
+                                      new_user.username,
+                                      new_user.language_code))
+                except IntegrityError:
+                    await db.execute("UPDATE users SET first_name = ?, last_name = ?, username = ?, language_code = ? "
+                                     "WHERE id = ?",
+                                     (msg.from_user.first_name,
+                                      msg.from_user.last_name,
+                                      msg.from_user.username,
+                                      msg.from_user.language_code,
+                                      msg.from_user.id))
             else:
                 await db.execute("UPDATE users SET first_name = ?, last_name = ?, username = ?, language_code = ? "
                                  "WHERE id = ?",

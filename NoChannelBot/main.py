@@ -4,7 +4,7 @@ from aiogram.types import ParseMode
 from aiogram.utils import executor
 from aiogram.utils.exceptions import TelegramAPIError
 
-from config import DB_URL, dp
+from config import DB_URL, dp, DEVELOPERS
 from core.db.tables import create_tables
 from core.handlers import register_commands_handlers, register_errors_handlers, register_messages_handlers, \
     bind_filters, set_commands
@@ -18,11 +18,14 @@ async def on_start(dps: Dispatcher):
     await create_tables()
     await set_commands()
 
-    try:
-        await dps.bot.send_message(382182253, f"{(await dps.bot.get_me()).mention} запущен!", parse_mode=ParseMode.HTML)
+    for developer in DEVELOPERS:
+        try:
+            await dps.bot.send_message(chat_id=developer,
+                                       text=f"{(await dps.bot.get_me()).mention} started!",
+                                       parse_mode=ParseMode.HTML)
 
-    except TelegramAPIError:
-        return
+        except TelegramAPIError:
+            continue
 
 
 async def on_shutdown(dps: Dispatcher):

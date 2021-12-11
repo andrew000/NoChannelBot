@@ -9,6 +9,8 @@ env.read_env()
 
 DEVELOPERS = (382182253, 641848459)
 
+CHANNEL_BOT_ID = 136817688
+
 DB_URL = Path('./db') / 'no_channel.db'
 
 bot = Bot(token=env.str('BOT_TOKEN'))
