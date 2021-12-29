@@ -1,15 +1,16 @@
-from typing import List
+from typing import List, Union
 
 from aiogram.dispatcher.filters import CommandStart, BoundFilter
 from aiogram.types import Message, BotCommand, BotCommandScopeAllPrivateChats, \
-    BotCommandScopeAllChatAdministrators, BotCommandScopeAllGroupChats, ContentType
+    BotCommandScopeAllChatAdministrators, BotCommandScopeAllGroupChats, ContentType, CallbackQuery
 
 from config import dp, DEVELOPERS
+from core.callbacks.clb_unban_channel import clb_unban_channel, UNBAN_CHANNEL_CB
 from core.cmds.cmd_ch_ban import cmd_enable_ch_ban, cmd_disable_ch_ban
 from core.cmds.cmd_check_adm import cmd_check_adm
 from core.cmds.cmd_start import cmd_start
-from core.cmds.cmd_unban import cmd_unban
 from core.cmds.messages import messages
+from core.cmds.restriction_cmds import cmd_whitelist, cmd_blacklist
 
 
 class ChatAdminAndDevFilter(BoundFilter):
@@ -18,8 +19,16 @@ class ChatAdminAndDevFilter(BoundFilter):
     def __init__(self, user_id: List):
         self.user_id = user_id
 
-    async def check(self, msg: Message) -> bool:
-        return (await msg.chat.get_member(msg.from_user.id)).is_chat_admin() or msg.from_user.id in self.user_id
+    async def check(self, msg_or_clb: Union[Message, CallbackQuery]) -> bool:
+        user_id = msg_or_clb.from_user.id
+
+        if isinstance(msg_or_clb, CallbackQuery):
+            chat = msg_or_clb.message.chat
+
+        else:
+            chat = msg_or_clb.chat
+
+        return (await chat.get_member(user_id)).is_chat_admin() or user_id in self.user_id
 
 
 def bind_filters():
@@ -33,7 +42,8 @@ def register_commands_handlers():
     dp.register_message_handler(cmd_enable_ch_ban, ChatAdminAndDevFilter(DEVELOPERS), commands='enable_ch_ban')
     dp.register_message_handler(cmd_disable_ch_ban, ChatAdminAndDevFilter(DEVELOPERS), commands='disable_ch_ban')
     dp.register_message_handler(cmd_check_adm, ChatAdminAndDevFilter(DEVELOPERS), commands='check_adm')
-    dp.register_message_handler(cmd_unban, ChatAdminAndDevFilter(DEVELOPERS), commands='ch_unban')
+    dp.register_message_handler(cmd_whitelist, ChatAdminAndDevFilter(DEVELOPERS), commands='whitelist')
+    dp.register_message_handler(cmd_blacklist, ChatAdminAndDevFilter(DEVELOPERS), commands='blacklist')
 
 
 def register_messages_handlers():
@@ -41,6 +51,10 @@ def register_messages_handlers():
         ContentType.TEXT, ContentType.AUDIO, ContentType.DOCUMENT, ContentType.GAME, ContentType.PHOTO,
         ContentType.STICKER, ContentType.VIDEO, ContentType.VIDEO_NOTE, ContentType.VOICE, ContentType.CONTACT,
         ContentType.LOCATION, ContentType.VENUE, ContentType.POLL, ContentType.DICE])
+
+
+def register_callback_query_handlers():
+    dp.register_callback_query_handler(clb_unban_channel, UNBAN_CHANNEL_CB.filter(), ChatAdminAndDevFilter(DEVELOPERS))
 
 
 def register_errors_handlers():
@@ -61,5 +75,6 @@ async def set_commands():
         BotCommand('enable_ch_ban', 'Включить бан каналов'),
         BotCommand('disable_ch_ban', 'Выключить бан каналов'),
         BotCommand('check_adm', 'Проверка работоспособности'),
-        BotCommand('ch_unban', 'Разбанить канал')
+        BotCommand('whitelist', 'Разбанить канал'),
+        BotCommand('blacklist', 'Забанить канал')
     ], scope=BotCommandScopeAllChatAdministrators())

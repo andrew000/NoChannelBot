@@ -13,5 +13,8 @@ async def cmd_start(msg: Message):
                     f"\n"
                     f""
                     f"/enable_ch_ban - Включить бан каналов\n"
-                    f"/disable_ch_ban - Выключить бан каналов",
+                    f"/disable_ch_ban - Выключить бан каналов\n"
+                    f"\n"
+                    f"/whitelist - Добавить канал в белый список\n"
+                    f"/blacklist - Убрать канал из белого списка",
                     parse_mode=ParseMode.HTML)

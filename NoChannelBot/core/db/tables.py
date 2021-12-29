@@ -22,9 +22,16 @@ active_pm BOOLEAN NOT NULL DEFAULT FALSE
 );
 """
 
+whitelist = """CREATE TABLE IF NOT EXISTS whitelist
+(
+chat_id BIGINT NOT NULL,
+sender_chat_id BIGINT NOT NULL,
+PRIMARY KEY (chat_id, sender_chat_id)
+)"""
+
 
 async def create_tables():
     async with aiosqlite.connect(DB_URL) as db:
-        for table in (group, users):
+        for table in (group, users, whitelist):
             await db.execute(table)
             await db.commit()

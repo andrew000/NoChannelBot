@@ -1,21 +1,23 @@
-FROM python:3.9.9-slim as builder
-WORKDIR /app
+FROM python:3.9.13-slim as builder
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apt update && \
-    apt install gcc build-essential -y --no-install-recommends
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential gcc
 
 COPY ./requirements.txt requirements.txt
-RUN pip3 wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+
+RUN pip install --user -r requirements.txt
 
 
-FROM python:3.9.9-slim
+FROM python:3.9.13-slim
+
+ENV PYTHONUNBUFFERED 1
+
 WORKDIR /app
 
-COPY --from=builder /app/wheels /wheels
-COPY --from=builder /app/requirements.txt .
+COPY --from=builder /root/.local /root/.local
 
-RUN pip3 install --no-cache -U pip
-RUN pip3 install --no-cache /wheels/*
+COPY . .
+ENV PATH=/root/.local/bin:$PATH

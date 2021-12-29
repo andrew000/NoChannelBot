@@ -48,10 +48,8 @@ class CheckGroupMiddleware(BaseMiddleware):
                                       msg.chat.id))
 
             else:
-                await db.execute("UPDATE groups SET member_count = ?, link = ? WHERE id = ?",
-                                 (await msg.chat.get_member_count(),
-                                  await msg.chat.get_url(),
-                                  msg.chat.id))
+                await db.execute("UPDATE groups SET link = ? WHERE id = ?",
+                                 (await msg.chat.get_url(), msg.chat.id))
 
             await db.commit()
 

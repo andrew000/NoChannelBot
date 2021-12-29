@@ -7,7 +7,7 @@ from aiogram.utils.exceptions import TelegramAPIError
 from config import DB_URL, dp, DEVELOPERS
 from core.db.tables import create_tables
 from core.handlers import register_commands_handlers, register_errors_handlers, register_messages_handlers, \
-    bind_filters, set_commands
+    bind_filters, set_commands, register_callback_query_handlers
 from core.middlewares import register_middlewares
 
 
@@ -38,6 +38,7 @@ async def on_shutdown(dps: Dispatcher):
 def main():
     bind_filters()
     register_commands_handlers()
+    register_callback_query_handlers()
     register_messages_handlers()
     register_errors_handlers()
 

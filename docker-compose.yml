@@ -10,11 +10,11 @@ services:
     stop_signal: SIGINT
 
     volumes:
-      - ./NoChannelBot:/app
+      - ./NoChannelBot/db:/app/db
 
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
 
     restart: "on-failure"
 
-    entrypoint: [ "python3", "-u",  "main.py" ]
+    entrypoint: [ "python3", "-u", "main.py" ]
