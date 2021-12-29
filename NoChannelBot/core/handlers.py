@@ -2,7 +2,7 @@ from typing import List
 
 from aiogram.dispatcher.filters import CommandStart, BoundFilter
 from aiogram.types import Message, BotCommand, BotCommandScopeAllPrivateChats, \
-    BotCommandScopeAllChatAdministrators, BotCommandScopeAllGroupChats
+    BotCommandScopeAllChatAdministrators, BotCommandScopeAllGroupChats, ContentType
 
 from config import dp, DEVELOPERS
 from core.cmds.cmd_ch_ban import cmd_enable_ch_ban, cmd_disable_ch_ban
@@ -37,7 +37,10 @@ def register_commands_handlers():
 
 
 def register_messages_handlers():
-    dp.register_message_handler(messages)
+    dp.register_message_handler(messages, content_types=[
+        ContentType.TEXT, ContentType.AUDIO, ContentType.DOCUMENT, ContentType.GAME, ContentType.PHOTO,
+        ContentType.STICKER, ContentType.VIDEO, ContentType.VIDEO_NOTE, ContentType.VOICE, ContentType.CONTACT,
+        ContentType.LOCATION, ContentType.VENUE, ContentType.POLL, ContentType.DICE])
 
 
 def register_errors_handlers():
